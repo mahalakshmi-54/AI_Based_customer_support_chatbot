@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat Logs{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar Navigation -->
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="bg-primary text-white p-4 text-center">
+                <i class="fa-solid fa-user-shield fs-1 mb-2"></i>
+                <h5 class="mb-0 fw-bold">Admin Console</h5>
+                <small class="text-white-50">System Administrator</small>
+            </div>
+            <div class="list-group list-group-flush admin-sidebar-list">
+                <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action py-3 px-4 border-0">
+                    <i class="fa-solid fa-chart-pie me-2 text-secondary"></i> Dashboard Overview
+                </a>
+                <a href="{{ url_for('admin_tickets') }}" class="list-group-item list-group-item-action py-3 px-4 border-0">
+                    <i class="fa-solid fa-ticket me-2 text-success"></i> Support Tickets
+                </a>
+                <a href="{{ url_for('admin_faqs') }}" class="list-group-item list-group-item-action py-3 px-4 border-0">
+                    <i class="fa-solid fa-circle-question me-2 text-info"></i> FAQ Management
+                </a>
+                <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action py-3 px-4 border-0">
+                    <i class="fa-solid fa-users me-2 text-warning"></i> User Accounts
+                </a>
+                <a href="{{ url_for('admin_chats') }}" class="list-group-item list-group-item-action py-3 px-4 active border-0">
+                    <i class="fa-solid fa-history me-2 text-secondary"></i> Chat Histories
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Logs Panel -->
+    <div class="col-md-9">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-clock-rotate-left me-2 text-secondary"></i> Customer Chat Histories</h5>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Customer Name</th>
+                            <th>Session Title</th>
+                            <th>Status</th>
+                            <th>Messages Count</th>
+                            <th>Started Date</th>
+                            <th style="width: 120px; text-align: center;">Transcript</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for conv in conversations %}
+                            <tr>
+                                <td class="fw-bold">#{{ conv.id }}</td>
+                                <td>
+                                    <div class="fw-semibold text-dark">{{ conv.user.username }}</div>
+                                    <div class="text-muted fs-8">{{ conv.user.email }}</div>
+                                </td>
+                                <td>{{ conv.title }}</td>
+                                <td>
+                                    {% if conv.status == 'active' %}
+                                        <span class="badge bg-success rounded-pill">Active</span>
+                                    {% elif conv.status == 'escalated' %}
+                                        <span class="badge bg-warning text-dark rounded-pill">Escalated</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary rounded-pill">Closed</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ conv.messages|length }} msgs</td>
+                                <td>{{ conv.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('admin_chat_detail', conversation_id=conv.id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                        <i class="fa-solid fa-eye me-1"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">No chatbot conversation logs exist in the system database.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

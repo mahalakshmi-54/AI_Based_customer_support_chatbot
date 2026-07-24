@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to SupportAI{% endblock %}
+
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-lg-6 mb-4 mb-lg-0">
+        <h1 class="display-4 fw-bold mb-3">AI-Powered Customer Support <span class="text-primary">Chatbot</span></h1>
+        <p class="lead text-muted mb-4">
+            Resolve issues instantly with our natural language processing support agent. Check order status, file refunds, troubleshoot technical problems, and escalate to human agents seamlessly.
+        </p>
+        <div class="d-flex gap-3">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('new_chat') }}" class="btn btn-primary btn-lg px-4 text-white shadow-sm hover-up"><i class="fa-solid fa-comments me-2"></i> Start Chat Now</a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-lg px-4 hover-up"><i class="fa-solid fa-table-columns me-2"></i> Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 text-white shadow-sm hover-up"><i class="fa-solid fa-user-plus me-2"></i> Get Started</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg px-4 hover-up"><i class="fa-solid fa-right-to-bracket me-2"></i> Sign In</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-6 text-center">
+        <div class="hero-image-wrapper p-3">
+            <!-- Simulated Chatbot UI Interface for Landing Page -->
+            <div class="card shadow-lg border-0 rounded-4 text-start mx-auto hero-chat-card" style="max-width: 440px;">
+                <div class="card-header bg-primary text-white py-3 px-4 rounded-top-4 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="chat-avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                            <i class="fa-solid fa-robot fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-semibold">SupportAI Bot</h6>
+                            <small class="text-white-50"><i class="fa-solid fa-circle text-success me-1 small"></i> Online</small>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-ellipsis-vertical fs-5 text-white-50"></i>
+                </div>
+                <div class="card-body p-4 bg-light overflow-y-auto" style="height: 280px;">
+                    <div class="d-flex mb-3">
+                        <div class="bg-white text-dark p-3 rounded-3 shadow-sm border small" style="max-width: 80%;">
+                            Hello! How can I help you today? You can ask about order status, refunds, payments, or file a complaint.
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3 justify-content-end">
+                        <div class="bg-primary text-white p-3 rounded-3 shadow-sm small" style="max-width: 80%;">
+                            Where is my order? I want to track it.
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <div class="bg-white text-dark p-3 rounded-3 shadow-sm border small" style="max-width: 80%;">
+                            <i class="fa-solid fa-spinner fa-spin me-2 text-primary"></i> Typing response...
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 py-3 px-4 rounded-bottom-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control border-light-subtle rounded-pill bg-light" placeholder="Ask a support question..." disabled>
+                        <button class="btn btn-primary rounded-circle ms-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" disabled>
+                            <i class="fa-solid fa-paper-plane text-white fs-6"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5 border-light-subtle">
+
+<!-- Feature Cards Section -->
+<div class="row text-center py-4">
+    <div class="col-12 mb-5">
+        <h2 class="fw-bold">Key Application Features</h2>
+        <p class="text-muted col-md-8 mx-auto">Explore the rich functional elements engineered into the system, from state-of-the-art NLP query classification to a professional ticketing system.</p>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 p-4 border-0 shadow-sm rounded-4 hover-up">
+            <div class="feature-icon bg-primary-subtle text-primary rounded-4 d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 60px; height: 60px;">
+                <i class="fa-solid fa-brain fs-3"></i>
+            </div>
+            <h5 class="fw-bold mb-3">AI / NLP Intents</h5>
+            <p class="text-muted small mb-0">Classifies user queries into 8 support categories using a TF-IDF classifier, scoring matching confidence, and fallback logic.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 p-4 border-0 shadow-sm rounded-4 hover-up">
+            <div class="feature-icon bg-success-subtle text-success rounded-4 d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 60px; height: 60px;">
+                <i class="fa-solid fa-ticket fs-3"></i>
+            </div>
+            <h5 class="fw-bold mb-3">Ticketing & Escalation</h5>
+            <p class="text-muted small mb-0">Escalate chatbot conversations to human agents instantly. Customers can log tickets, tag categories, set priority, and monitor status updates.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 p-4 border-0 shadow-sm rounded-4 hover-up">
+            <div class="feature-icon bg-info-subtle text-info rounded-4 d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 60px; height: 60px;">
+                <i class="fa-solid fa-chart-line fs-3"></i>
+            </div>
+            <h5 class="fw-bold mb-3">Admin Dashboard</h5>
+            <p class="text-muted small mb-0">Admins gain system insights via interactive Chart.js visualizations. Dynamic management of tickets, FAQs, intents, and accounts.</p>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5 border-light-subtle">
+
+<!-- FAQ Accordion -->
+<div class="row py-4 justify-content-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold text-center mb-4">Frequently Asked Questions</h2>
+        <div class="accordion accordion-flush shadow-sm rounded-4 overflow-hidden border" id="faqAccordion">
+            {% for faq in faqs %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ faq.id }}">
+                        <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ faq.id }}" aria-expanded="false" aria-controls="collapse{{ faq.id }}">
+                            <span class="badge bg-primary-subtle text-primary me-2">{{ faq.category }}</span> {{ faq.question }}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ faq.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ faq.id }}" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted small">
+                            {{ faq.answer }}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="p-4 text-center text-muted">
+                    No FAQs seeded yet.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

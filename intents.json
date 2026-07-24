@@ -1,0 +1,148 @@
+{
+  "intents": [
+    {
+      "intent_name": "greeting",
+      "patterns": [
+        "hi",
+        "hello",
+        "hey",
+        "is anyone there?",
+        "good day",
+        "howdy",
+        "hola",
+        "greetings",
+        "hello chatbot"
+      ],
+      "responses": [
+        "Hello! How can I help you today?",
+        "Hi there! What can I assist you with?",
+        "Greetings! How can I support you today?"
+      ]
+    },
+    {
+      "intent_name": "product_info",
+      "patterns": [
+        "what products do you sell?",
+        "tell me about your services",
+        "what are your best items?",
+        "do you have product specifications?",
+        "details about products",
+        "what brand is this?",
+        "do you sell electronics?",
+        "what items do you offer?"
+      ],
+      "responses": [
+        "We offer a wide range of premium electronics, apparel, and home essentials. You can explore details on our product catalog!",
+        "Our products are manufactured with top-quality materials and come with a 1-year warranty. What category are you interested in?",
+        "We specialize in high-quality products. Let me know if you need details on any specific item!"
+      ]
+    },
+    {
+      "intent_name": "order_status",
+      "patterns": [
+        "where is my order?",
+        "track my package",
+        "order delivery status",
+        "when will my order arrive?",
+        "shipment status",
+        "order tracking",
+        "check status of my order",
+        "track order"
+      ],
+      "responses": [
+        "I can help track your order. Please provide your Order ID, and I will retrieve the shipping status.",
+        "To check your order status, please enter your order number.",
+        "Your package is in transit! Please share your order ID so I can give you the exact delivery date."
+      ]
+    },
+    {
+      "intent_name": "refund",
+      "patterns": [
+        "how do I get a refund?",
+        "refund request",
+        "can I return my item?",
+        "return policy",
+        "money back",
+        "want a refund for my order",
+        "how to return product",
+        "refund policy"
+      ],
+      "responses": [
+        "We offer a 30-day money-back guarantee for unused items in original packaging. Would you like to start a return?",
+        "To request a refund, please provide your order details. Returns are processed within 5-7 business days once received.",
+        "Our return policy allows items to be returned within 30 days. Let me know if you want me to initiate a refund request."
+      ]
+    },
+    {
+      "intent_name": "payment_issue",
+      "patterns": [
+        "payment failed",
+        "credit card declined",
+        "charged twice",
+        "how do I pay?",
+        "payment options",
+        "double charge on my card",
+        "billing error",
+        "failed transaction"
+      ],
+      "responses": [
+        "I'm sorry to hear that. Please make sure your billing details match your card exactly. If you were double charged, we will refund the extra amount automatically.",
+        "We accept Visa, MasterCard, AMEX, PayPal, and Apple Pay. If you have a billing error, please provide your transaction ID.",
+        "For failed payments, please check your card balance and details, or try an alternative payment method. I can escalate this to billing support if needed."
+      ]
+    },
+    {
+      "intent_name": "complaint",
+      "patterns": [
+        "bad customer service",
+        "terrible service",
+        "unhappy with my purchase",
+        "broken item",
+        "damaged product",
+        "defective item",
+        "I want to file a complaint",
+        "this is worst"
+      ],
+      "responses": [
+        "I am very sorry to hear about your experience. Your satisfaction is our priority. Let me help make this right.",
+        "We apologize for the inconvenience. Please share the details of the issue so I can help resolve it, or I can connect you directly with a human agent.",
+        "This is not the standard we strive for. I would be glad to escalate this to a supervisor. Would you like to raise a support ticket?"
+      ]
+    },
+    {
+      "intent_name": "technical_support",
+      "patterns": [
+        "website is not working",
+        "cannot log in",
+        "app crash",
+        "error message",
+        "password reset failed",
+        "how do I change my password?",
+        "technical issue",
+        "unable to sign in"
+      ],
+      "responses": [
+        "For login issues, please try clearing your browser cookies and cache. You can also reset your password using the 'Forgot Password' link.",
+        "Our technical team is on standby. Please describe the error you are seeing (or screenshot details), and I can create a priority support ticket.",
+        "If the website is slow or showing errors, it might be due to scheduled maintenance. Try refreshing. What technical issue are you facing?"
+      ]
+    },
+    {
+      "intent_name": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you later",
+        "thanks, bye",
+        "I am leaving",
+        "talk to you later",
+        "thank you and bye"
+      ],
+      "responses": [
+        "Goodbye! Have a wonderful day!",
+        "Thank you for contacting customer support. Bye!",
+        "Take care! Feel free to reach out if you need anything else."
+      ]
+    }
+  ]
+}

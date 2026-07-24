@@ -1,0 +1,204 @@
+/* CSS variables for consistent premium design system */
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-light: #f9fafb;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+    --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --card-hover-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar Premium Styling */
+#mainNavbar {
+    background-color: rgb(255 255 255 / 90%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.8rem 0;
+}
+
+#navBrand {
+    font-size: 1.35rem;
+    letter-spacing: -0.025em;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+    padding: 0.5rem 1rem !important;
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+/* Utility Animations & Transitions */
+.hover-up {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hover-up:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-hover-shadow) !important;
+}
+
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid transparent !important;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow) !important;
+    border-color: rgba(79, 70, 229, 0.2) !important;
+}
+
+/* Auth Cards */
+.auth-icon {
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+}
+
+/* Chat bubble aesthetics */
+.chat-bubble-user {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border-radius: 16px 16px 4px 16px !important;
+}
+
+.chat-bubble-bot {
+    background-color: white !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-dark) !important;
+    border-radius: 16px 16px 16px 4px !important;
+}
+
+/* Sidebar design */
+.admin-sidebar-list .list-group-item {
+    font-weight: 500;
+    color: var(--text-muted);
+    border-bottom: 1px solid #f3f4f6 !important;
+    transition: all 0.2s ease;
+}
+
+.admin-sidebar-list .list-group-item.active {
+    background-color: rgba(79, 70, 229, 0.08) !important;
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+.admin-sidebar-list .list-group-item:hover:not(.active) {
+    background-color: #f9fafb;
+    color: var(--primary-color);
+}
+
+/* Typing loading indicator */
+.typing-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 15px;
+}
+
+.typing-loader span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    margin-right: 3px;
+    animation: typing-loader 0.8s infinite alternate;
+    opacity: 0.4;
+}
+
+.typing-loader span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-loader span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing-loader {
+    from {
+        transform: translateY(0);
+        opacity: 0.3;
+    }
+    to {
+        transform: translateY(-6px);
+        opacity: 1;
+    }
+}
+
+/* Extra premium dashboard cards design */
+.hover-shadow:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border-color: rgba(79, 70, 229, 0.25) !important;
+}
+
+.fs-7 {
+    font-size: 0.85rem !important;
+}
+.fs-8 {
+    font-size: 0.75rem !important;
+}
+
+.hero-chat-card {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+
+/* Primary color override for buttons */
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+.bg-primary-subtle {
+    background-color: rgba(79, 70, 229, 0.1) !important;
+}
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+.btn-outline-primary {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+.btn-outline-primary:hover {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
