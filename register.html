@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="auth-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fa-solid fa-user-plus fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold">Create Account</h3>
+                    <p class="text-muted small">Join SupportAI to chat with our virtual assistant</p>
+                </div>
+                
+                <form action="{{ url_for('register') }}" method="POST" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="username" class="form-label small fw-medium">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-user text-muted"></i></span>
+                            <input type="text" class="form-control bg-light border-start-0 ps-0" id="username" name="username" placeholder="johndoe" required>
+                        </div>
+                        <div class="invalid-feedback">Please choose a username.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label small fw-medium">Email address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-envelope text-muted"></i></span>
+                            <input type="email" class="form-control bg-light border-start-0 ps-0" id="email" name="email" placeholder="john@example.com" required>
+                        </div>
+                        <div class="invalid-feedback">Please enter a valid email.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label small fw-medium">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
+                            <input type="password" class="form-control bg-light border-start-0 ps-0" id="password" name="password" placeholder="••••••••" required minlength="6">
+                        </div>
+                        <div class="invalid-feedback">Password must be at least 6 characters.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="role" class="form-label small fw-medium">Account Type / Role</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-user-shield text-muted"></i></span>
+                            <select class="form-select bg-light border-start-0 ps-0" id="role" name="role">
+                                <option value="customer">Customer (Access AI Chat & Dashboard)</option>
+                                <option value="admin">Administrator (Access Analytics & Control Panel)</option>
+                            </select>
+                        </div>
+                        <div class="form-text text-muted small">Choose your role to test different sections of the application.</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2 text-white shadow-sm fw-semibold mb-3">Sign Up</button>
+                    
+                    <div class="text-center mt-3">
+                        <p class="mb-0 small text-muted">Already have an account? <a href="{{ url_for('login') }}" class="text-primary fw-medium text-decoration-none">Sign In</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Client-side validation activation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}
