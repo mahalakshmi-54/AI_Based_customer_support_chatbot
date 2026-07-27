@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4 bg-primary text-white p-4">
+            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div>
+                    <h2 class="fw-bold mb-1">Welcome, {{ current_user.username }}!</h2>
+                    <p class="mb-0 opacity-75">Access customer assistance, track tickets, or review your conversation histories.</p>
+                </div>
+                <div class="mt-3 mt-md-0">
+                    <a href="{{ url_for('new_chat') }}" class="btn btn-light text-primary fw-semibold px-4 py-2 shadow-sm rounded-pill hover-up">
+                        <i class="fa-solid fa-plus-circle me-1"></i> Start New Chat Session
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Chats Sidebar -->
+    <div class="col-lg-5 mb-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-comments me-2 text-primary"></i> Chat History</h5>
+                <span class="badge bg-primary-subtle text-primary rounded-pill">{{ conversations|length }} Sessions</span>
+            </div>
+            <div class="card-body px-4 pb-4 pt-0 overflow-y-auto" style="max-height: 480px;">
+                <div class="list-group list-group-flush">
+                    {% for conv in conversations %}
+                        <a href="{{ url_for('chat_session', conversation_id=conv.id) }}" class="list-group-item list-group-item-action border-0 px-0 py-3 d-flex justify-content-between align-items-center border-bottom">
+                            <div>
+                                <h6 class="fw-semibold mb-1 text-dark">{{ conv.title }}</h6>
+                                <p class="text-muted small mb-0"><i class="fa-regular fa-clock me-1"></i> {{ conv.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                            </div>
+                            <div>
+                                {% if conv.status == 'active' %}
+                                    <span class="badge bg-success rounded-pill small">Active</span>
+                                {% elif conv.status == 'escalated' %}
+                                    <span class="badge bg-warning text-dark rounded-pill small">Escalated</span>
+                                {% else %}
+                                    <span class="badge bg-secondary rounded-pill small">Closed</span>
+                                {% endif %}
+                                <i class="fa-solid fa-chevron-right text-muted ms-2 small"></i>
+                            </div>
+                        </a>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fa-regular fa-comment-dots fs-1 text-muted mb-3 d-block"></i>
+                            <p class="text-muted mb-0 small">No chat history available. Click 'Start New Chat' to begin!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tickets Management -->
+    <div class="col-lg-7 mb-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-ticket me-2 text-success"></i> Support Tickets</h5>
+                <button class="btn btn-success btn-sm px-3 rounded-pill text-white" data-bs-toggle="modal" data-bs-target="#newTicketModal">
+                    <i class="fa-solid fa-plus me-1"></i> Open Ticket
+                </button>
+            </div>
+            <div class="card-body px-4 pb-4 pt-0 overflow-y-auto" style="max-height: 480px;">
+                {% for ticket in tickets %}
+                    <div class="card border border-light-subtle rounded-3 mb-3 hover-shadow p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="badge bg-light text-dark border me-1 small">{{ ticket.category }}</span>
+                                {% if ticket.priority == 'high' %}
+                                    <span class="badge bg-danger rounded-pill small">High Priority</span>
+                                {% elif ticket.priority == 'medium' %}
+                                    <span class="badge bg-warning text-dark rounded-pill small">Medium Priority</span>
+                                {% else %}
+                                    <span class="badge bg-info text-white rounded-pill small">Low Priority</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                {% if ticket.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark rounded-pill">Pending</span>
+                                {% elif ticket.status == 'in_progress' %}
+                                    <span class="badge bg-primary rounded-pill">In Progress</span>
+                                {% else %}
+                                    <span class="badge bg-success rounded-pill">Resolved</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <h6 class="fw-bold mb-1 text-dark">#{{ ticket.id }}: {{ ticket.subject }}</h6>
+                        <p class="text-muted small mb-2">{{ ticket.description }}</p>
+                        
+                        {% if ticket.admin_reply %}
+                            <div class="bg-light border-start border-success border-3 p-3 rounded-2 mt-2">
+                                <h6 class="fw-bold text-success mb-1 small"><i class="fa-solid fa-user-shield me-1"></i> Support Agent Reply:</h6>
+                                <p class="mb-0 text-dark small fs-7">{{ ticket.admin_reply }}</p>
+                            </div>
+                        {% endif %}
+                        <div class="mt-2 text-muted small fs-7">
+                            <i class="fa-regular fa-calendar-days me-1"></i> Logged: {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fa-regular fa-folder-open fs-1 text-muted mb-3 d-block"></i>
+                        <p class="text-muted mb-0 small">No support tickets logged. Click 'Open Ticket' if you have unresolved issues!</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: New Ticket -->
+<div class="modal fade" id="newTicketModal" tabindex="-1" aria-labelledby="newTicketModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-success text-white py-3 px-4 border-0">
+                <h5 class="modal-title fw-bold" id="newTicketModalLabel"><i class="fa-solid fa-ticket me-2"></i> Submit Support Ticket</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('new_ticket') }}" method="POST" class="needs-validation" novalidate>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="subject" class="form-label small fw-medium">Subject / Topic</label>
+                        <input type="text" class="form-control bg-light" id="subject" name="subject" placeholder="e.g. Broken charger received" required>
+                        <div class="invalid-feedback">Please enter a subject.</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label small fw-medium">Category</label>
+                            <select class="form-select bg-light" id="category" name="category">
+                                <option value="General">General Inquiries</option>
+                                <option value="Technical">Technical Support</option>
+                                <option value="Billing">Billing & Payment</option>
+                                <option value="Orders">Order Tracking</option>
+                                <option value="Refunds">Returns & Refunds</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="priority" class="form-label small fw-medium">Priority</label>
+                            <select class="form-select bg-light" id="priority" name="priority">
+                                <option value="low">Low Priority</option>
+                                <option value="medium" selected>Medium Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label small fw-medium">Describe your issue in detail</label>
+                        <textarea class="form-control bg-light" id="description" name="description" rows="4" placeholder="Include as much detail as possible (Order ID, transaction ID, error descriptions)..." required></textarea>
+                        <div class="invalid-feedback">Please describe your support request.</div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 py-3 px-4">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success text-white shadow-sm px-4">Submit Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // client-side validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}

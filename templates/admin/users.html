@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar Navigation -->
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="bg-primary text-white p-4 text-center">
+                <i class="fa-solid fa-user-shield fs-1 mb-2"></i>
+                <h5 class="mb-0 fw-bold">Admin Console</h5>
+                <small class="text-white-50">System Administrator</small>
+            </div>
+            <div class="list-group list-group-flush admin-sidebar-list">
+                <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action py-3 px-4 border-0">
+                    <i class="fa-solid fa-chart-pie me-2 text-secondary"></i> Dashboard Overview
+                </a>
+                <a href="{{ url_for('admin_tickets') }}" class="list-group-item list-group-item-action py-3 px-4 border-0">
+                    <i class="fa-solid fa-ticket me-2 text-success"></i> Support Tickets
+                </a>
+                <a href="{{ url_for('admin_faqs') }}" class="list-group-item list-group-item-action py-3 px-4 border-0">
+                    <i class="fa-solid fa-circle-question me-2 text-info"></i> FAQ Management
+                </a>
+                <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action py-3 px-4 active border-0">
+                    <i class="fa-solid fa-users me-2 text-warning"></i> User Accounts
+                </a>
+                <a href="{{ url_for('admin_chats') }}" class="list-group-item list-group-item-action py-3 px-4 border-0">
+                    <i class="fa-solid fa-history me-2 text-secondary"></i> Chat Histories
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Management Panel -->
+    <div class="col-md-9">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-users me-2 text-warning"></i> Registered User Accounts</h5>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Email Address</th>
+                            <th>Joined Date</th>
+                            <th>Role / Access</th>
+                            <th style="width: 150px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td class="fw-bold">#{{ user.id }}</td>
+                                <td class="fw-semibold text-dark">{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    {% if user.role == 'admin' %}
+                                        <span class="badge bg-danger rounded-pill px-3">Administrator</span>
+                                    {% else %}
+                                        <span class="badge bg-success rounded-pill px-3">Customer</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <!-- Role modification toggle -->
+                                        {% if user.id != current_user.id %}
+                                            <form action="{{ url_for('admin_update_user_role', user_id=user.id) }}" method="POST" class="d-inline">
+                                                <input type="hidden" name="role" value="{{ 'customer' if user.role == 'admin' else 'admin' }}">
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm px-2 rounded-pill small" title="Toggle Role">
+                                                    <i class="fa-solid fa-arrows-rotate me-1"></i> Make {{ 'Customer' if user.role == 'admin' else 'Admin' }}
+                                                </button>
+                                            </form>
+                                            
+                                            <!-- Delete user -->
+                                            <form action="{{ url_for('admin_delete_user', user_id=user.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this user account? All chats and tickets belonging to them will be lost.');">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle" title="Delete User" style="width: 32px; height: 32px; padding: 0;">
+                                                    <i class="fa-solid fa-trash" style="font-size: 11px;"></i>
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-muted small italic">Logged In (Self)</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

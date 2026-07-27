@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat Details - Session #{{ conversation.id }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <!-- Header -->
+            <div class="card-header bg-primary text-white py-3 px-4 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <a href="{{ url_for('admin_chats') }}" class="text-white me-3 fs-5" title="Back to Logs">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <i class="fa-solid fa-clock-rotate-left fs-4 me-3"></i>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Chat Session Details - #{{ conversation.id }}</h6>
+                        <small class="opacity-75">Customer: <strong>{{ conversation.user.username }}</strong> ({{ conversation.user.email }})</small>
+                    </div>
+                </div>
+                <div>
+                    {% if conversation.status == 'active' %}
+                        <span class="badge bg-success px-3 py-2 rounded-pill">Active</span>
+                    {% elif conversation.status == 'escalated' %}
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">Escalated</span>
+                    {% else %}
+                        <span class="badge bg-secondary px-3 py-2 rounded-pill">Closed</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Meta details -->
+            <div class="card-body bg-light border-bottom p-3 px-4 text-muted small d-flex flex-wrap gap-4">
+                <div><i class="fa-regular fa-calendar-days me-1"></i> Started: <strong>{{ conversation.created_at.strftime('%Y-%m-%d %H:%M') }}</strong></div>
+                <div><i class="fa-solid fa-message me-1"></i> Message Count: <strong>{{ messages|length }} Total</strong></div>
+            </div>
+
+            <!-- Transcript Panel -->
+            <div class="card-body p-4 bg-white overflow-y-auto" style="height: 460px;">
+                {% for message in messages %}
+                    {% if message.sender == 'user' %}
+                        <div class="d-flex mb-3 justify-content-end">
+                            <div class="chat-bubble-user p-3 rounded-3 shadow-sm text-white bg-primary small text-break" style="max-width: 80%;">
+                                <div class="fw-bold mb-1" style="font-size: 10px; opacity: 0.85;">Customer:</div>
+                                {{ message.message_text }}
+                                <div class="text-end mt-1 text-white-50" style="font-size: 9px;">
+                                    {{ message.created_at.strftime('%H:%M') }}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="d-flex mb-3">
+                            <div class="chat-avatar bg-light border text-primary rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="chat-bubble-bot p-3 rounded-3 shadow-sm bg-light border text-dark small text-break" style="max-width: 80%;">
+                                <div class="fw-bold mb-1 text-primary" style="font-size: 10px;">SupportAI Bot:</div>
+                                {{ message.message_text }}
+                                {% if message.intent and message.intent != 'greeting' and message.intent != 'goodbye' and message.intent != 'escalate' %}
+                                    <div class="mt-2 pt-2 border-top border-light-subtle d-flex align-items-center justify-content-between text-muted" style="font-size: 10px;">
+                                        <span><i class="fa-solid fa-brain me-1"></i> Intent Matched: <strong>{{ message.intent }}</strong></span>
+                                        <span>Confidence: <strong>{{ (message.confidence * 100)|round(1) }}%</strong></span>
+                                    </div>
+                                {% endif %}
+                                <div class="text-end mt-1 text-muted" style="font-size: 9px;">
+                                    {{ message.created_at.strftime('%H:%M') }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

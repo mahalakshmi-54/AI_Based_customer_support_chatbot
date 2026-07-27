@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ conversation.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden" id="chatWindow">
+            <!-- Chat Header -->
+            <div class="card-header bg-primary text-white py-3 px-4 d-flex justify-content-between align-items-center border-0">
+                <div class="d-flex align-items-center">
+                    <a href="{{ url_for('dashboard') }}" class="text-white me-3 fs-5" title="Back to Dashboard">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <div class="chat-avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                        <i class="fa-solid fa-robot fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold text-white" id="convTitle">{{ conversation.title }}</h6>
+                        <small class="text-white-50 d-flex align-items-center">
+                            <i class="fa-solid fa-circle text-success me-1 small" style="font-size: 8px;"></i> AI Agent Online
+                        </small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    {% if conversation.status == 'escalated' %}
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="fa-solid fa-circle-exclamation me-1"></i> Escalated to Human Agent</span>
+                    {% else %}
+                        <form action="{{ url_for('escalate_chat', conversation_id=conversation.id) }}" method="POST" id="escalateForm">
+                            <button type="submit" class="btn btn-warning btn-sm text-dark px-3 rounded-pill fw-semibold shadow-sm hover-up">
+                                <i class="fa-solid fa-headset me-1"></i> Escalate to Human
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Chat Message Panel -->
+            <div class="card-body p-4 bg-light overflow-y-auto" id="messagePanel" style="height: 480px;">
+                {% for message in messages %}
+                    {% if message.sender == 'user' %}
+                        <div class="d-flex mb-3 justify-content-end">
+                            <div class="chat-bubble-user p-3 rounded-3 shadow-sm text-white bg-primary small text-break" style="max-width: 80%;">
+                                {{ message.message_text }}
+                                <div class="text-end mt-1 text-white-50" style="font-size: 9px;">
+                                    {{ message.created_at.strftime('%H:%M') }}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="d-flex mb-3">
+                            <div class="chat-avatar bg-white border text-primary rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="chat-bubble-bot p-3 rounded-3 shadow-sm bg-white border text-dark small text-break" style="max-width: 80%;">
+                                {{ message.message_text }}
+                                {% if message.intent and message.intent != 'greeting' and message.intent != 'goodbye' and message.intent != 'escalate' %}
+                                    <div class="mt-2 pt-2 border-top border-light-subtle d-flex align-items-center justify-content-between text-muted" style="font-size: 10px;">
+                                        <span><i class="fa-solid fa-brain me-1"></i> Intent: <strong>{{ message.intent }}</strong></span>
+                                        <span>Confidence: <strong>{{ (message.confidence * 100)|round(1) }}%</strong></span>
+                                    </div>
+                                {% endif %}
+                                <div class="text-end mt-1 text-muted" style="font-size: 9px;">
+                                    {{ message.created_at.strftime('%H:%M') }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Typing / Loading Animation (Hidden by Default) -->
+                <div class="d-none" id="typingIndicator">
+                    <div class="d-flex mb-3">
+                        <div class="chat-avatar bg-white border text-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 36px; height: 36px;">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="chat-bubble-bot p-3 rounded-3 shadow-sm bg-white border text-muted small" style="width: 80px;">
+                            <div class="typing-loader">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Suggestions Tags -->
+            <div class="bg-light border-top px-4 py-2" id="suggestionArea">
+                <small class="text-muted d-block mb-1">Common Questions:</small>
+                <div class="d-flex flex-wrap gap-2 mb-1">
+                    <button class="btn btn-outline-primary btn-sm rounded-pill suggestion-tag text-start py-1 px-3 small border-light-subtle bg-white text-secondary" data-msg="What products do you sell?">What products do you sell?</button>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill suggestion-tag text-start py-1 px-3 small border-light-subtle bg-white text-secondary" data-msg="Where is my order?">Track my order</button>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill suggestion-tag text-start py-1 px-3 small border-light-subtle bg-white text-secondary" data-msg="How do I get a refund?">Return/Refund Policy</button>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill suggestion-tag text-start py-1 px-3 small border-light-subtle bg-white text-secondary" data-msg="Payment failed. Credit card declined.">Payment/Billing issues</button>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill suggestion-tag text-start py-1 px-3 small border-light-subtle bg-white text-secondary" data-msg="I cannot log in. Technical support.">Login/Technical help</button>
+                </div>
+            </div>
+
+            <!-- Chat Footer Input -->
+            <div class="card-footer bg-white border-top-0 py-3 px-4">
+                <form id="chatForm">
+                    <div class="input-group">
+                        <input type="hidden" id="convId" value="{{ conversation.id }}">
+                        <input type="text" class="form-control border-light-subtle rounded-pill bg-light py-2 px-3 ps-4" id="userInput" placeholder="Type your customer support question here..." required autocomplete="off" {% if conversation.status == 'escalated' %}disabled{% endif %}>
+                        <button type="submit" class="btn btn-primary rounded-circle ms-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 44px; height: 44px;" id="sendBtn" {% if conversation.status == 'escalated' %}disabled{% endif %}>
+                            <i class="fa-solid fa-paper-plane text-white fs-6"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-scroll message area to bottom
+    const messagePanel = document.getElementById('messagePanel');
+    function scrollToBottom() {
+        messagePanel.scrollTop = messagePanel.scrollHeight;
+    }
+    
+    // Initial scroll
+    window.addEventListener('load', scrollToBottom);
+
+    // Form Submissions
+    const chatForm = document.getElementById('chatForm');
+    const userInput = document.getElementById('userInput');
+    const convId = document.getElementById('convId').value;
+    const typingIndicator = document.getElementById('typingIndicator');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // Trigger tags click
+    document.querySelectorAll('.suggestion-tag').forEach(tag => {
+        tag.addEventListener('click', function() {
+            if (userInput.disabled) return;
+            userInput.value = this.getAttribute('data-msg');
+            chatForm.dispatchEvent(new Event('submit'));
+        });
+    });
+
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        // Clear input and disable elements during request
+        userInput.value = '';
+        userInput.disabled = true;
+        sendBtn.disabled = true;
+
+        // Append User Message to panel
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        
+        const userHtml = `
+            <div class="d-flex mb-3 justify-content-end">
+                <div class="chat-bubble-user p-3 rounded-3 shadow-sm text-white bg-primary small text-break" style="max-width: 80%;">
+                    ${escapeHtml(message)}
+                    <div class="text-end mt-1 text-white-50" style="font-size: 9px;">
+                        ${timeStr}
+                    </div>
+                </div>
+            </div>
+        `;
+        // Insert before typing indicator
+        typingIndicator.insertAdjacentHTML('beforebegin', userHtml);
+        scrollToBottom();
+
+        // Show typing indicator
+        typingIndicator.classList.remove('d-none');
+        scrollToBottom();
+
+        // Send API query
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: message,
+                conversation_id: convId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Hide typing indicator
+            typingIndicator.classList.add('d-none');
+
+            if (data.error) {
+                // Handle error
+                const errorHtml = `
+                    <div class="d-flex mb-3">
+                        <div class="chat-avatar bg-white border text-danger rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        </div>
+                        <div class="chat-bubble-bot p-3 rounded-3 shadow-sm bg-danger-subtle text-danger border small" style="max-width: 80%;">
+                            Error: ${data.error}
+                        </div>
+                    </div>
+                `;
+                typingIndicator.insertAdjacentHTML('beforebegin', errorHtml);
+            } else {
+                // Append bot message
+                let intentMarkup = '';
+                if (data.intent && data.intent !== 'greeting' && data.intent !== 'goodbye' && data.intent !== 'escalate') {
+                    const confidencePercent = (data.confidence * 100).toFixed(1);
+                    intentMarkup = `
+                        <div class="mt-2 pt-2 border-top border-light-subtle d-flex align-items-center justify-content-between text-muted" style="font-size: 10px;">
+                            <span><i class="fa-solid fa-brain me-1"></i> Intent: <strong>${data.intent}</strong></span>
+                            <span>Confidence: <strong>${confidencePercent}%</strong></span>
+                        </div>
+                    `;
+                }
+
+                // If intent is fallback, add escalation suggestions
+                let escalateOffer = '';
+                if (data.intent === 'fallback') {
+                    escalateOffer = `
+                        <div class="mt-3 text-center border-top border-light-subtle pt-2">
+                            <p class="text-muted small mb-2" style="font-size: 11px;">Still need help? You can connect to a human agent right now.</p>
+                            <button onclick="triggerEscalation()" class="btn btn-warning btn-sm text-dark px-3 py-1 rounded-pill fw-semibold shadow-sm"><i class="fa-solid fa-headset me-1"></i> Connect to Human</button>
+                        </div>
+                    `;
+                }
+
+                const botHtml = `
+                    <div class="d-flex mb-3">
+                        <div class="chat-avatar bg-white border text-primary rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="chat-bubble-bot p-3 rounded-3 shadow-sm bg-white border text-dark small text-break" style="max-width: 80%;">
+                            ${data.response}
+                            ${intentMarkup}
+                            ${escalateOffer}
+                            <div class="text-end mt-1 text-muted" style="font-size: 9px;">
+                                ${timeStr}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                typingIndicator.insertAdjacentHTML('beforebegin', botHtml);
+            }
+
+            // Restore inputs
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
+            scrollToBottom();
+        })
+        .catch(err => {
+            console.error(err);
+            typingIndicator.classList.add('d-none');
+            const errorHtml = `
+                <div class="d-flex mb-3">
+                    <div class="chat-avatar bg-white border text-danger rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+                    <div class="chat-bubble-bot p-3 rounded-3 shadow-sm bg-danger-subtle text-danger border small" style="max-width: 80%;">
+                        Failed to connect to the server. Please try again.
+                    </div>
+                </div>
+            `;
+            typingIndicator.insertAdjacentHTML('beforebegin', errorHtml);
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            scrollToBottom();
+        });
+    });
+
+    function triggerEscalation() {
+        document.getElementById('escalateForm').submit();
+    }
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>
+{% endblock %}
